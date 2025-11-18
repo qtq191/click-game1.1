@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给朋友的一个小挑战</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffeaa7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* 占满全屏高度 */
+            margin: 0;
+            overflow: hidden; /* 防止按钮跑出去出现滚动条 */
+            text-align: center;
+        }
+
+        h1 {
+            color: #2d3436;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-weight: bold;
+        }
+
+        /* 同意按钮样式 */
+        #yesBtn {
+            background-color: #00b894;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+        #yesBtn:active {
+            transform: scale(0.95);
+        }
+
+        /* 拒绝按钮样式 */
+        #noBtn {
+            background-color: #d63031;
+            color: white;
+            box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4);
+            position: absolute; /* 绝对定位，方便移动 */
+            /* 初始位置稍微靠右一点 */
+            left: 60%; 
+            top: 0;
+            transition: all 0.1s ease; /* 移动时的平滑效果 */
+        }
+        
+        /* 让 YES 按钮居中稍微靠左 */
+        .btn-wrapper {
+            display: inline-block;
+            position: absolute;
+            left: 40%;
+            top: 0;
+            transform: translateX(-100%);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1 id="question">今晚这顿饭你请客怎么样？</h1>
+
+    <div class="container">
+        <div class="btn-wrapper">
+            <button id="yesBtn">没问题</button>
+        </div>
+        <button id="noBtn">下次一定</button>
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const question = document.getElementById('question');
+
+        // 1. 点击“没问题”后的交互
+        yesBtn.addEventListener('click', () => {
+            // 修改文字
+            question.innerText = "太棒了！我会截图为证！🎉";
+            // 隐藏按钮
+            noBtn.style.display = 'none';
+            yesBtn.innerText = "截图发给我吧";
+            // 简单的背景变色庆祝
+            document.body.style.backgroundColor = "#55efc4";
+            
+            alert("我就知道你最大方了！");
+        });
+
+        // 2. “下次一定”按钮的逃跑逻辑
+        // 电脑端：鼠标移上去就跑
+        noBtn.addEventListener('mouseover', moveButton);
+        // 手机端：点击的时候跑（因为手机没有鼠标悬停）
+        noBtn.addEventListener('touchstart', moveButton);
+        noBtn.addEventListener('click', moveButton);
+
+        function moveButton(e) {
+            // 阻止默认点击行为
+            e.preventDefault(); 
+            
+            // 获取浏览器窗口的宽和高
+            const maxWidth = window.innerWidth - 150; // 减去按钮宽度防止溢出
+            const maxHeight = window.innerHeight - 100;
+
+            // 生成随机坐标
+            const randomX = Math.floor(Math.random() * maxWidth);
+            const randomY = Math.floor(Math.random() * maxHeight);
+
+            // 应用新坐标
+            noBtn.style.position = "fixed"; // 改为固定定位，满屏幕乱跑
+            noBtn.style.left = randomX + "px";
+            noBtn.style.top = randomY + "px";
+        }
+    </script>
+</body>
+</html>
