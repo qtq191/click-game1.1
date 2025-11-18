@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>给鹿鹿个机会吧</title>
+    <title>给鹿个机会吧</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,27 +12,22 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            height: 100vh; /* 占满全屏高度 */
             margin: 0;
-            overflow: hidden;
+            overflow: hidden; /* 防止按钮跑出去出现滚动条 */
             text-align: center;
-            transition: background-color 0.5s ease-in-out; /* 背景颜色平滑过渡 */
         }
 
         h1 {
             color: #2d3436;
             font-size: 2.5rem;
             margin-bottom: 50px;
-            transition: opacity 0.5s ease-in-out; /* 标题淡入淡出 */
         }
 
         .container {
             position: relative;
             width: 100%;
-            height: 200px; /* 足够容纳按钮 */
-            display: flex; /* 使用 flex 布局让按钮初始更容易对齐 */
-            justify-content: center; /* 水平居中 */
-            align-items: center; /* 垂直居中 */
+            height: 200px;
         }
 
         button {
@@ -41,9 +36,8 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s, font-size 0.5s, padding 0.5s, width 0.5s, height 0.5s, opacity 0.5s; /* 添加更多过渡效果 */
+            transition: transform 0.2s;
             font-weight: bold;
-            white-space: nowrap; /* 防止按钮文字换行 */
         }
 
         /* “好呀”按钮样式 */
@@ -200,11 +194,11 @@
         yesBtn.addEventListener('click', () => {
             if (yesBtn.classList.contains('fullscreen-yes')) {
                  // 最终点击后，跳转到你想要的页面
-                 // 替换为你希望跳转的实际链接
-                window.location.href = "https://www.bilibili.com/video/BV1WV411V74z/?spm_id_from=333.337.search-card.all.click"; 
+                 
             }
         });
 
     </script>
 </body>
 </html>
+
