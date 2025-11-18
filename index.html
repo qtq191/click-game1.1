@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>给朋友的一个小挑战</title>
+    <title>给鹿鹿个机会吧</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,22 +12,27 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh; /* 占满全屏高度 */
+            height: 100vh;
             margin: 0;
-            overflow: hidden; /* 防止按钮跑出去出现滚动条 */
+            overflow: hidden;
             text-align: center;
+            transition: background-color 0.5s ease-in-out; /* 背景颜色平滑过渡 */
         }
 
         h1 {
             color: #2d3436;
             font-size: 2.5rem;
             margin-bottom: 50px;
+            transition: opacity 0.5s ease-in-out; /* 标题淡入淡出 */
         }
 
         .container {
             position: relative;
             width: 100%;
-            height: 200px;
+            height: 200px; /* 足够容纳按钮 */
+            display: flex; /* 使用 flex 布局让按钮初始更容易对齐 */
+            justify-content: center; /* 水平居中 */
+            align-items: center; /* 垂直居中 */
         }
 
         button {
@@ -36,96 +41,170 @@
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, font-size 0.5s, padding 0.5s, width 0.5s, height 0.5s, opacity 0.5s; /* 添加更多过渡效果 */
             font-weight: bold;
+            white-space: nowrap; /* 防止按钮文字换行 */
         }
 
-        /* 同意按钮样式 */
+        /* “好呀”按钮样式 */
         #yesBtn {
             background-color: #00b894;
             color: white;
             box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+            /* 初始位置，现在不使用绝对定位 */
+            position: relative; /* 相对定位，方便调整z-index和层级 */
+            z-index: 10; /* 确保它在“呵呵”上方 */
         }
         #yesBtn:active {
             transform: scale(0.95);
         }
 
-        /* 拒绝按钮样式 */
+        /* “呵呵”按钮样式 */
         #noBtn {
             background-color: #d63031;
             color: white;
             box-shadow: 0 5px 15px rgba(214, 48, 49, 0.4);
-            position: absolute; /* 绝对定位，方便移动 */
-            /* 初始位置稍微靠右一点 */
-            left: 60%; 
-            top: 0;
-            transition: all 0.1s ease; /* 移动时的平滑效果 */
+            position: absolute; /* “呵呵”继续使用绝对定位，这样它可以在“好呀”旁边 */
+            margin-left: 150px; /* 初始位置稍微偏右，避免和好呀重叠 */
+            z-index: 5; /* 确保它在“好呀”下方 */
         }
-        
-        /* 让 YES 按钮居中稍微靠左 */
-        .btn-wrapper {
-            display: inline-block;
-            position: absolute;
-            left: 40%;
-            top: 0;
-            transform: translateX(-100%);
+        /* 避免鼠标再次移上去乱跑 */
+        #noBtn:hover {
+            transform: none; /* 移除hover时的transform */
         }
 
+        /* 新增：完全占满屏幕的好呀按钮样式 */
+        .fullscreen-yes {
+            position: fixed; /* 固定定位，占据整个视窗 */
+            top: 0;
+            left: 0;
+            width: 100vw; /* 视窗宽度 */
+            height: 100vh; /* 视窗高度 */
+            font-size: 8rem !important; /* 超大字体 */
+            padding: 0 !important; /* 移除内边距 */
+            border-radius: 0 !important; /* 移除圆角 */
+            display: flex; /* 再次使用flex居中文字 */
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease-in-out;
+            background-color: #00b894; /* 确保背景色不变 */
+            box-shadow: none; /* 移除阴影 */
+            z-index: 100; /* 确保在最顶层 */
+            cursor: pointer;
+        }
+
+        /* 新增：隐藏按钮的样式 */
+        .hidden-button {
+            opacity: 0;
+            pointer-events: none; /* 鼠标事件穿透，不能点击 */
+        }
     </style>
 </head>
 <body>
 
-    <h1 id="question">今晚这顿饭你请客怎么样？</h1>
+    <h1 id="question">给鹿鹿个机会吧？</h1>
 
     <div class="container">
-        <div class="btn-wrapper">
-            <button id="yesBtn">没问题</button>
-        </div>
-        <button id="noBtn">下次一定</button>
+        <button id="yesBtn">好呀</button>
+        <button id="noBtn">呵呵</button>
     </div>
 
     <script>
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const question = document.getElementById('question');
+        const container = document.querySelector('.container'); // 获取容器
+        
+        let noClickCount = 0; // 记录“呵呵”按钮点击次数
+        let yesClickCount = 0; // 记录“好呀”按钮点击次数
 
-        // 1. 点击“没问题”后的交互
+        // ---------- “好呀”按钮的逻辑 ----------
         yesBtn.addEventListener('click', () => {
-            // 修改文字
-            question.innerText = "太棒了！我会截图为证！🎉";
-            // 隐藏按钮
-            noBtn.style.display = 'none';
-            yesBtn.innerText = "截图发给我吧";
-            // 简单的背景变色庆祝
-            document.body.style.backgroundColor = "#55efc4";
+            yesClickCount++;
+
+            // 每次点击“好呀”按钮都变大
+            let currentYesFontSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            let currentYesPaddingX = parseFloat(window.getComputedStyle(yesBtn).paddingLeft);
+            let currentYesPaddingY = parseFloat(window.getComputedStyle(yesBtn).paddingTop);
+
+            yesBtn.style.fontSize = (currentYesFontSize * 1.2) + 'px'; // 字体变大
+            yesBtn.style.padding = (currentYesPaddingY * 1.2) + 'px ' + (currentYesPaddingX * 1.2) + 'px'; // 内边距变大
             
-            alert("我就知道你最大方了！");
+            // 当“好呀”点击到第5次时
+            if (yesClickCount >= 5) {
+                // 1. “呵呵”按钮彻底隐藏
+                noBtn.classList.add('hidden-button');
+                // 2. “好呀”按钮占据整个屏幕
+                yesBtn.classList.add('fullscreen-yes');
+                // 3. 修改“好呀”按钮的文字
+                yesBtn.innerText = "太棒啦！我等你！";
+                // 4. 隐藏问题标题
+                question.style.opacity = '0';
+                setTimeout(() => question.style.display = 'none', 500); // 确保淡出后再隐藏
+            }
+            // 第一次点击“好呀”时可以把“呵呵”的位置稍微调整一下，确保不被完全覆盖
+            // 不过因为“呵呵”是absolute，且zIndex低，基本不会被完全覆盖
         });
 
-        // 2. “下次一定”按钮的逃跑逻辑
-        // 电脑端：鼠标移上去就跑
-        noBtn.addEventListener('mouseover', moveButton);
-        // 手机端：点击的时候跑（因为手机没有鼠标悬停）
-        noBtn.addEventListener('touchstart', moveButton);
-        noBtn.addEventListener('click', moveButton);
+        // ---------- “呵呵”按钮的逻辑 ----------
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // 阻止任何默认行为，确保不跳转
 
-        function moveButton(e) {
-            // 阻止默认点击行为
-            e.preventDefault(); 
+            noClickCount++;
+
+            // 每次点击“呵呵”按钮都变小
+            let currentNoFontSize = parseFloat(window.getComputedStyle(noBtn).fontSize);
+            let currentNoPaddingX = parseFloat(window.getComputedStyle(noBtn).paddingLeft);
+            let currentNoPaddingY = parseFloat(window.getComputedStyle(noBtn).paddingTop);
+
+            noBtn.style.fontSize = (currentNoFontSize * 0.8) + 'px'; // 字体变小
+            noBtn.style.padding = (currentNoPaddingY * 0.8) + 'px ' + (currentNoPaddingX * 0.8) + 'px'; // 内边距变小
+            noBtn.style.transform = `scale(${1 - noClickCount * 0.15})`; // 按钮整体缩小
+
+            // 当“呵呵”点击到第5次时
+            if (noClickCount >= 5) {
+                // 彻底隐藏“呵呵”按钮
+                noBtn.classList.add('hidden-button');
+                // 可以加个小提示
+                alert("“呵呵”已经没啦，你只能点“好呀”了哦！");
+            }
+            // 每次点击“呵呵”后，随机移动一下它的位置（可以保持，也可以取消，看你喜好）
+            // 如果不需要移动，就把下面的 moveNoButton() 调用去掉
+            moveNoButton(); 
+        });
+
+        // 辅助函数：随机移动“呵呵”按钮
+        function moveNoButton() {
+            const containerRect = container.getBoundingClientRect(); // 获取容器的尺寸
+            const noBtnRect = noBtn.getBoundingClientRect(); // 获取按钮的尺寸
+
+            // 确保按钮不会跑出容器范围，且留一点边距
+            const randomX = Math.floor(Math.random() * (containerRect.width - noBtnRect.width - 40)) + 20;
+            const randomY = Math.floor(Math.random() * (containerRect.height - noBtnRect.height - 40)) + 20;
             
-            // 获取浏览器窗口的宽和高
-            const maxWidth = window.innerWidth - 150; // 减去按钮宽度防止溢出
-            const maxHeight = window.innerHeight - 100;
-
-            // 生成随机坐标
-            const randomX = Math.floor(Math.random() * maxWidth);
-            const randomY = Math.floor(Math.random() * maxHeight);
-
-            // 应用新坐标
-            noBtn.style.position = "fixed"; // 改为固定定位，满屏幕乱跑
-            noBtn.style.left = randomX + "px";
-            noBtn.style.top = randomY + "px";
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.transform = `scale(${1 - noClickCount * 0.15})`; // 确保移动时缩放效果仍在
         }
+
+        // 初始化时让“呵呵”按钮随机在一个位置
+        window.onload = () => {
+             // 确保页面加载后“呵呵”按钮再进行第一次随机定位
+            // 这样能确保containerRect和noBtnRect已经计算好
+            // 避免在DOM还没有完全渲染时出现计算错误
+            moveNoButton(); 
+        };
+
+        // 增加一个总的点击“好呀”后的处理逻辑
+        // 这个逻辑是当最终“好呀”占据屏幕后，再次点击它触发的
+        yesBtn.addEventListener('click', () => {
+            if (yesBtn.classList.contains('fullscreen-yes')) {
+                 // 最终点击后，跳转到你想要的页面
+                 // 替换为你希望跳转的实际链接
+                window.location.href = "https://www.bilibili.com/video/BV1WV411V74z/?spm_id_from=333.337.search-card.all.click"; 
+            }
+        });
+
     </script>
 </body>
 </html>
